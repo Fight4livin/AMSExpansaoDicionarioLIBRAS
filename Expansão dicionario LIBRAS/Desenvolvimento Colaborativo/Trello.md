@@ -1,0 +1,3 @@
+![[Captura de tela 2026-07-04 172345.png]]![[Captura de tela 2026-07-04 173433.png]]
+
+Uma tarefa é considerada pronta quanto todas suas partes independentes são concluídas, ou seja, o levantamento de requisitos funcionais é considerado pronto mesmo que os requisitos que abranjam a gramática de LIBRAS não tenham sido levantados. Da mesma forma, um grupo de tarefas estará pronto quando suas partes e as conexões que as interligam forem abordadas.
