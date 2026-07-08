@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dicionário da Língua Brasileira de Sinais — Protótipo</title>
+<style>
+  :root {
+    --azul: #1b4f72;
+    --azul-claro: #2e86c1;
+    --fundo: #f4f6f7;
+    --borda: #d5dbdb;
+    --verde: #1e8449;
+    --amarelo: #b9770e;
+    --vermelho: #b03a2e;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin:0; background:var(--fundo); color:#212f3d; }
+  header { background:var(--azul); color:white; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+  header h1 { font-size:1.2rem; margin:0; }
+  main { max-width:1100px; margin:1.5rem auto; padding:0 1rem; display:grid; grid-template-columns: 340px 1fr; gap:1.5rem; }
+  @media (max-width:800px){ main{ grid-template-columns: 1fr; } }
+  section.panel { background:white; border:1px solid var(--borda); border-radius:8px; padding:1rem; }
+  h2 { font-size:1rem; color:var(--azul); margin-top:0; border-bottom:2px solid var(--azul-claro); padding-bottom:.4rem; }
+  label { display:block; font-size:.8rem; font-weight:600; margin:.6rem 0 .2rem; }
+  input, select, textarea { width:100%; padding:.4rem; border:1px solid var(--borda); border-radius:4px; font-size:.85rem; }
+  textarea { resize:vertical; min-height:2.4rem; }
+  fieldset { border:1px solid var(--borda); border-radius:6px; margin:.6rem 0; padding:.5rem .7rem; }
+  legend { font-size:.78rem; font-weight:700; color:var(--azul-claro); padding:0 .3rem; }
+  button { cursor:pointer; border:none; border-radius:5px; padding:.5rem .9rem; font-size:.85rem; font-weight:600; margin-top:.6rem; }
+  .btn-primario { background:var(--azul-claro); color:white; }
+  .btn-secundario { background:#eaecee; color:#333; }
+  .btn-perigo { background:var(--vermelho); color:white; }
+  .btn-sucesso { background:var(--verde); color:white; }
+  .btn-alerta { background:var(--amarelo); color:white; }
+  .lista-item { border:1px solid var(--borda); border-radius:6px; padding:.6rem .8rem; margin-bottom:.6rem; cursor:pointer; }
+  .lista-item:hover { border-color:var(--azul-claro); }
+  .lista-item h3 { margin:0 0 .2rem; font-size:.95rem; color:var(--azul); }
+  .tag { display:inline-block; font-size:.68rem; padding:.15rem .5rem; border-radius:10px; font-weight:700; color:white; margin-left:.3rem;}
+  .tag-rascunho{background:#839192;} .tag-em_analise{background:var(--amarelo);}
+  .tag-aprovado{background:var(--verde);} .tag-rejeitado{background:var(--vermelho);}
+  .busca { display:flex; gap:.4rem; margin-bottom:.8rem; }
+  .msg { padding:.5rem .7rem; border-radius:5px; font-size:.8rem; margin:.5rem 0; }
+  .msg-erro { background:#fdedec; color:var(--vermelho); border:1px solid #f5b7b1; }
+  .msg-ok { background:#eafaf1; color:var(--verde); border:1px solid #a9dfbf; }
+  video { width:100%; border-radius:6px; background:black; margin-top:.4rem; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; }
+  .acoes { display:flex; gap:.5rem; flex-wrap:wrap; }
+  .rodape-form { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.8rem; }
+  #vazio { text-align:center; color:#888; padding:2rem; }
+  a.skip-link{position:absolute;left:-999px;}
+  a.skip-link:focus{left:0;background:white;padding:.4rem;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo (acessibilidade)</a>
+<header>
+  <h1>📖 Dicionário da Língua Brasileira de Sinais — Protótipo (CRUD + Upload + Aprovação)</h1>
+</header>
+<main id="conteudo">
+  <section class="panel" aria-label="Formulário de cadastro/edição de sinal">
+    <h2 id="form-titulo">Novo sinal</h2>
+    <div id="mensagens"></div>
+    <form id="form-sinal">
+      <input type="hidden" id="id" />
+      <label for="palavra">Palavra *</label>
+      <input id="palavra" required aria-required="true" />
+
+      <label for="classeGramatical">Classe gramatical *</label>
+      <select id="classeGramatical" required>
+        <option value="">Selecione</option>
+        <option>SUBSTANTIVO</option><option>VERBO</option><option>ADJETIVO</option>
+        <option>ADVÉRBIO</option><option>PRONOME</option><option>NUMERAL</option>
+      </select>
+
+      <label for="assunto">Assunto</label>
+      <input id="assunto" placeholder="ex: FAMÍLIA" />
+
+      <label for="acepcao">Acepção</label>
+      <textarea id="acepcao"></textarea>
+
+      <label for="exemplo">Exemplo (português)</label>
+      <textarea id="exemplo"></textarea>
+
+      <label for="exemploLibras">Exemplo em Libras (glosa)</label>
+      <textarea id="exemploLibras"></textarea>
+
+      <fieldset>
+        <legend>Parâmetros primários</legend>
+        <label for="pontoArticulacao">Ponto de articulação</label>
+        <select id="pontoArticulacao">
+          <option value="">Selecione</option>
+          <option>Cabeça</option><option>Olhos</option><option>Peito</option>
+          <option>Cintura</option><option>Braços</option><option>Mãos</option>
+        </select>
+        <label for="configuracaoMao">Configuração da mão</label>
+        <input id="configuracaoMao" placeholder="ex: mão em L, mão aberta..." />
+      </fieldset>
+
+      <fieldset>
+        <legend>Parâmetros secundários</legend>
+        <div class="grid2">
+          <div><label for="disposicaoMao">Disposição da mão</label><input id="disposicaoMao" /></div>
+          <div><label for="orientacaoMao">Orientação da mão</label><input id="orientacaoMao" /></div>
+        </div>
+        <label for="regiaoContato">Região de contato</label>
+        <input id="regiaoContato" />
+      </fieldset>
+
+      <label for="componentesNaoManuais">Componentes não manuais</label>
+      <input id="componentesNaoManuais" placeholder="ex: sobrancelhas franzidas, bochechas infladas..." />
+
+      <label for="classificacaoSinal">Classificação do sinal</label>
+      <select id="classificacaoSinal">
+        <option value="uma_mao">Sinal com apenas uma mão (ex: amigo)</option>
+        <option value="dois_movimentos_diferentes">Dois movimentos diferentes (ex: papel)</option>
+        <option value="dois_movimentos_iguais">Dois movimentos iguais (ex: trabalhar)</option>
+        <option value="movimentos_face">Movimentos da face (ex: sexo)</option>
+      </select>
+
+      <label for="origem">Origem</label>
+      <input id="origem" value="nacional" />
+
+      <fieldset>
+        <legend>LGPD — Dados sensíveis</legend>
+        <label><input type="checkbox" id="contemMenorDeIdade" style="width:auto;display:inline-block;vertical-align:middle;"> Mídia contém imagem/vídeo de menor de idade</label>
+        <label><input type="checkbox" id="consentimentoObtido" style="width:auto;display:inline-block;vertical-align:middle;"> Consentimento/termo de uso de imagem obtido</label>
+      </fieldset>
+
+      <div class="rodape-form">
+        <button type="submit" class="btn-primario">💾 Salvar sinal</button>
+        <button type="button" id="btn-limpar" class="btn-secundario">Limpar formulário</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" aria-label="Lista e detalhes dos sinais">
+    <h2>Sinais cadastrados</h2>
+    <div class="busca">
+      <input id="busca-palavra" placeholder="Buscar por palavra..." aria-label="Buscar por palavra" />
+      <select id="busca-status" aria-label="Filtrar por status">
+        <option value="">Todos os status</option>
+        <option value="rascunho">Rascunho</option>
+        <option value="em_analise">Em análise</option>
+        <option value="aprovado">Aprovado</option>
+        <option value="rejeitado">Rejeitado</option>
+      </select>
+      <button class="btn-secundario" id="btn-buscar">Buscar</button>
+    </div>
+    <div id="lista"></div>
+
+    <div id="detalhes" style="display:none; margin-top:1rem; border-top:2px solid var(--borda); padding-top:1rem;">
+      <h2>Detalhes / mídia / aprovação</h2>
+      <div id="detalhes-conteudo"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API = '';
+let sinalSelecionadoId = null;
+
+function el(id){ return document.getElementById(id); }
+function mostrarMsg(texto, tipo){
+  el('mensagens').innerHTML = `<div class="msg msg-${tipo==='erro'?'erro':'ok'}">${texto}</div>`;
+  setTimeout(()=>{ el('mensagens').innerHTML=''; }, 4000);
+}
+
+function limparFormulario(){
+  el('form-sinal').reset();
+  el('id').value = '';
+  el('form-titulo').textContent = 'Novo sinal';
+}
+
+function coletarFormulario(){
+  return {
+    palavra: el('palavra').value,
+    classeGramatical: el('classeGramatical').value,
+    assunto: el('assunto').value,
+    acepcao: el('acepcao').value,
+    exemplo: el('exemplo').value,
+    exemploLibras: el('exemploLibras').value,
+    parametrosPrimarios: {
+      pontoArticulacao: el('pontoArticulacao').value,
+      configuracaoMao: el('configuracaoMao').value,
+    },
+    parametrosSecundarios: {
+      disposicaoMao: el('disposicaoMao').value,
+      orientacaoMao: el('orientacaoMao').value,
+      regiaoContato: el('regiaoContato').value,
+    },
+    componentesNaoManuais: el('componentesNaoManuais').value,
+    classificacaoSinal: el('classificacaoSinal').value,
+    origem: el('origem').value,
+    dadosSensiveis: {
+      contemMenorDeIdade: el('contemMenorDeIdade').checked,
+      consentimentoObtido: el('consentimentoObtido').checked,
+    },
+  };
+}
+
+el('form-sinal').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = el('id').value;
+  const payload = coletarFormulario();
+  try {
+    const resp = await fetch(id ? `/api/sinais/${id}` : '/api/sinais', {
+      method: id ? 'PUT' : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok) { mostrarMsg((data.erros||[data.erro]).join(' '), 'erro'); return; }
+    mostrarMsg(id ? 'Sinal atualizado com sucesso.' : 'Sinal criado com sucesso (rascunho).', 'ok');
+    limparFormulario();
+    carregarLista();
+    selecionarSinal(data.id);
+  } catch(err){ mostrarMsg('Erro de conexão: '+err.message, 'erro'); }
+});
+
+el('btn-limpar').addEventListener('click', limparFormulario);
+el('btn-buscar').addEventListener('click', carregarLista);
+el('busca-palavra').addEventListener('keydown', (e)=>{ if(e.key==='Enter') carregarLista(); });
+
+async function carregarLista(){
+  const palavra = el('busca-palavra').value;
+  const status = el('busca-status').value;
+  const params = new URLSearchParams();
+  if (palavra) params.set('palavra', palavra);
+  if (status) params.set('status', status);
+  const resp = await fetch('/api/sinais?' + params.toString());
+  const dados = await resp.json();
+  const lista = el('lista');
+  if (!dados.length) { lista.innerHTML = '<div id="vazio">Nenhum sinal cadastrado ainda.</div>'; return; }
+  lista.innerHTML = dados.map(s => `
+    <div class="lista-item" data-id="${s.id}">
+      <h3>${s.palavra} <span class="tag tag-${s.status}">${s.status.replace('_',' ')}</span></h3>
+      <div style="font-size:.8rem;color:#555;">${s.classeGramatical || ''} ${s.assunto ? '· '+s.assunto : ''}</div>
+    </div>`).join('');
+  [...lista.querySelectorAll('.lista-item')].forEach(item=>{
+    item.addEventListener('click', ()=> selecionarSinal(item.dataset.id));
+  });
+}
+
+async function selecionarSinal(id){
+  sinalSelecionadoId = id;
+  const resp = await fetch(`/api/sinais/${id}`);
+  const s = await resp.json();
+  if (!resp.ok) return;
+
+  // Preenche formulário para edição
+  el('id').value = s.id;
+  el('form-titulo').textContent = 'Editando: ' + s.palavra;
+  el('palavra').value = s.palavra;
+  el('classeGramatical').value = s.classeGramatical;
+  el('assunto').value = s.assunto || '';
+  el('acepcao').value = s.acepcao || '';
+  el('exemplo').value = s.exemplo || '';
+  el('exemploLibras').value = s.exemploLibras || '';
+  el('pontoArticulacao').value = (s.parametrosPrimarios||{}).pontoArticulacao || '';
+  el('configuracaoMao').value = (s.parametrosPrimarios||{}).configuracaoMao || '';
+  el('disposicaoMao').value = (s.parametrosSecundarios||{}).disposicaoMao || '';
+  el('orientacaoMao').value = (s.parametrosSecundarios||{}).orientacaoMao || '';
+  el('regiaoContato').value = (s.parametrosSecundarios||{}).regiaoContato || '';
+  el('componentesNaoManuais').value = s.componentesNaoManuais || '';
+  el('classificacaoSinal').value = s.classificacaoSinal || 'uma_mao';
+  el('origem').value = s.origem || '';
+  el('contemMenorDeIdade').checked = !!(s.dadosSensiveis||{}).contemMenorDeIdade;
+  el('consentimentoObtido').checked = !!(s.dadosSensiveis||{}).consentimentoObtido;
+
+  const det = el('detalhes-conteudo');
+  det.innerHTML = `
+    <p><strong>Status atual:</strong> <span class="tag tag-${s.status}">${s.status}</span></p>
+    ${s.videoPath ? `<video controls src="${s.videoPath}"></video>` : '<p><em>Nenhum vídeo anexado.</em></p>'}
+    <form id="form-upload">
+      <label for="arquivo-video">Anexar vídeo do sinal</label>
+      <input type="file" id="arquivo-video" accept="video/*" />
+      <button type="submit" class="btn-secundario">⬆️ Enviar vídeo</button>
+    </form>
+    <div class="acoes">
+      <button id="btn-enviar-analise" class="btn-alerta">Enviar para análise</button>
+      <button id="btn-aprovar" class="btn-sucesso">Aprovar</button>
+      <button id="btn-rejeitar" class="btn-perigo">Rejeitar</button>
+      <button id="btn-excluir" class="btn-perigo">🗑️ Excluir sinal</button>
+    </div>
+    <h3 style="font-size:.85rem;margin-top:1rem;">Histórico de aprovação</h3>
+    <ul style="font-size:.78rem;">
+      ${(s.historicoAprovacao||[]).map(h=>`<li>${h.evento} — ${new Date(h.data).toLocaleString('pt-BR')}</li>`).join('')}
+    </ul>
+  `;
+  el('detalhes').style.display = 'block';
+
+  el('form-upload').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const file = el('arquivo-video').files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('video', file);
+    const r = await fetch(`/api/sinais/${id}/midia`, { method:'POST', body: fd });
+    const d = await r.json();
+    if (!r.ok) { mostrarMsg(d.erro || 'Falha no upload', 'erro'); return; }
+    mostrarMsg('Vídeo enviado com sucesso.', 'ok');
+    selecionarSinal(id);
+  });
+
+  el('btn-enviar-analise').addEventListener('click', ()=> transicao(id, 'enviar-analise'));
+  el('btn-aprovar').addEventListener('click', ()=> transicao(id, 'aprovar'));
+  el('btn-rejeitar').addEventListener('click', ()=> transicao(id, 'rejeitar'));
+  el('btn-excluir').addEventListener('click', async ()=>{
+    if (!confirm('Confirma exclusão deste sinal?')) return;
+    await fetch(`/api/sinais/${id}`, { method:'DELETE' });
+    mostrarMsg('Sinal excluído.', 'ok');
+    el('detalhes').style.display='none';
+    limparFormulario();
+    carregarLista();
+  });
+}
+
+async function transicao(id, acao){
+  const r = await fetch(`/api/sinais/${id}/${acao}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({revisor:'Beto Revisor Surdo'}) });
+  const d = await r.json();
+  if (!r.ok) { mostrarMsg(d.erro || 'Falha na transição', 'erro'); return; }
+  mostrarMsg('Status atualizado para: ' + d.status, 'ok');
+  carregarLista();
+  selecionarSinal(id);
+}
+
+carregarLista();
+</script>
+</body>
+</html>
